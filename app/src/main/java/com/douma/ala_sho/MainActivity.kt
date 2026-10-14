@@ -143,29 +143,53 @@ class MainActivity : Activity() {
         type.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, options)
         content.addView(type, margin())
         val details = EditText(this).apply {
-            hint = "اشرح المشكلة ومكانها..."; minLines = 4; gravity = Gravity.TOP or Gravity.RIGHT
-            setPadding(dp(12), dp(12), dp(12), dp(12)); background = rounded(Color.WHITE, dp(12))
-            textDirection = View.TEXT_DIRECTION_RTL
-        }
-        content.addView(details, margin())
-        content.addView(button("إرفاق صورة") {
-            val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
-            startActivityForResult(intent, 301)
-        }, margin())
-        content.addView(button("تحديد الموقع على الخريطة") {
-            openUrl("https://www.google.com/maps/search/?api=1&query=Douma")
-        }, margin())
-        content.addView(button("تجهيز رسالة الشكوى للمشاركة") {
-            val body = "شكوى من تطبيق على شو عم تدور بدوما؟\\nالنوع: ${type.selectedItem}\\nالتفاصيل: ${details.text}\\nيرجى تحديد جهة الاستلام الرسمية قبل الإرسال."
-           val shareIntent = Intent(Intent.ACTION_SEND)
-shareIntent.setType("text/plain")
-shareIntent.putExtra(Intent.EXTRA_TEXT, body)
-startActivity(Intent.createChooser(shareIntent, "مشاركة الشكوى"))
-        val disclaimer = text("ملاحظة: هذه النسخة لا ترسل الشكوى تلقائياً إلى المجلس ولا تحفظها في قاعدة بيانات. يلزم تحديد قناة رسمية وربطها قبل الإطلاق.", 13f, Color.DKGRAY)
-        disclaimer.setPadding(0, dp(12), 0, 0); content.addView(disclaimer)
+    hint = "اشرح المشكلة ومكانها..."
+    minLines = 4
+    gravity = Gravity.TOP or Gravity.RIGHT
+    setPadding(dp(12), dp(12), dp(12), dp(12))
+    background = rounded(Color.WHITE, dp(12))
+    textDirection = View.TEXT_DIRECTION_RTL
+}
+content.addView(details, margin())
+
+content.addView(button("إرفاق صورة") {
+    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+        type = "image/*"
     }
-    private fun openUrl(url: String) {
-        try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
-        catch (_: Exception) { Toast.makeText(this, "تعذر فتح الرابط", Toast.LENGTH_SHORT).show() }
+    startActivityForResult(intent, 301)
+}, margin())
+
+content.addView(button("تحديد الموقع على الخريطة") {
+    openUrl("https://www.google.com/maps/search/?api=1&query=Douma")
+}, margin())
+
+content.addView(button("تجهيز رسالة الشكوى للمشاركة") {
+    val body = "شكوى من تطبيق على شو عم تدور بدوما؟\n" +
+        "النوع: ${type.selectedItem}\n" +
+        "التفاصيل: ${details.text}\n" +
+        "يرجى تحديد جهة الاستلام الرسمية قبل الإرسال."
+
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        setType("text/plain")
+        putExtra(Intent.EXTRA_TEXT, body)
     }
+    startActivity(Intent.createChooser(shareIntent, "مشاركة الشكوى"))
+}, margin())
+
+val disclaimer = text(
+    "ملاحظة: هذه النسخة لا ترسل الشكوى تلقائياً إلى المجلس ولا تحفظها في قاعدة بيانات. يلزم تحديد قناة رسمية وربطها قبل الإطلاق.",
+    13f,
+    Color.DKGRAY
+)
+disclaimer.setPadding(0, dp(12), 0, 0)
+content.addView(disclaimer)
+}
+
+private fun openUrl(url: String) {
+    try {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    } catch (_: Exception) {
+        Toast.makeText(this, "تعذر فتح الرابط", Toast.LENGTH_SHORT).show()
+    }
+}
 }

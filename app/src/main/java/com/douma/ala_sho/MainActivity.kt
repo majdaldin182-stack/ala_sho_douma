@@ -157,9 +157,10 @@ class MainActivity : Activity() {
         }, margin())
         content.addView(button("تجهيز رسالة الشكوى للمشاركة") {
             val body = "شكوى من تطبيق على شو عم تدور بدوما؟\\nالنوع: ${type.selectedItem}\\nالتفاصيل: ${details.text}\\nيرجى تحديد جهة الاستلام الرسمية قبل الإرسال."
-            val send = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, body) }
-            startActivity(Intent.createChooser(send, "مشاركة الشكوى"))
-        }, margin())
+           val shareIntent = Intent(Intent.ACTION_SEND)
+shareIntent.setType("text/plain")
+shareIntent.putExtra(Intent.EXTRA_TEXT, body)
+startActivity(Intent.createChooser(shareIntent, "مشاركة الشكوى"))
         val disclaimer = text("ملاحظة: هذه النسخة لا ترسل الشكوى تلقائياً إلى المجلس ولا تحفظها في قاعدة بيانات. يلزم تحديد قناة رسمية وربطها قبل الإطلاق.", 13f, Color.DKGRAY)
         disclaimer.setPadding(0, dp(12), 0, 0); content.addView(disclaimer)
     }

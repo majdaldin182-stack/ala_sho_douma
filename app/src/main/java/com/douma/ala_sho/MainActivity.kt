@@ -154,7 +154,7 @@ content.addView(details, margin())
 
 content.addView(button("إرفاق صورة") {
     val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-        type = "image/*"
+        this.type = "image/*"
     }
     startActivityForResult(intent, 301)
 }, margin())

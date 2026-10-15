@@ -18,3 +18,7 @@
 1. افتح مجلد المشروع في Android Studio.
 2. اسمح بمزامنة Gradle وتنزيل المتطلبات.
 3. من القائمة: Build > Build APK(s).
+
+
+## شعار مدينة دوما
+تمت إضافة الشعار من `app/src/main/assets/douma.svg`، ونسخة PNG للواجهة في `app/src/main/res/drawable-nodpi/douma_logo.png`، وأيقونات تشغيل في مجلدات `mipmap-*`. يظهر الشعار يمين عنوان الترويسة.

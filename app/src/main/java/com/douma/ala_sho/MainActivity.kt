@@ -68,7 +68,7 @@ class MainActivity : Activity() {
         base("على شو عم تدور بدوما؟", "كل شي بدك ياه، بتلاقيه هون")
         search = EditText(this).apply {
             hint = "ابحث عن محل، منتج، طبيب أو خدمة..."
-            textSize = 15f; e = true; gravity = Gravity.RIGHT
+            textSize = 15f;  gravity = Gravity.RIGHT
             setPadding(dp(14), dp(12), dp(14), dp(12)); background = rounded(Color.WHITE, dp(14))
             textDirection = View.TEXT_DIRECTION_RTL
         }

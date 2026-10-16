@@ -66,7 +66,7 @@ class MainActivity : Activity() {
             scaleType = ImageView.ScaleType.FIT_CENTER
             contentDescription = "شعار مدينة دوما"
         }
-        header.addView(logo, LinearLayout.LayoutParams(dp(94), dp(48)).apply { marginStart = dp(10) })
+       header.addView(logo, LinearLayout.LayoutParams(dp(140), dp(70)).apply { marginStart = dp(10) })
         val heading = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_VERTICAL

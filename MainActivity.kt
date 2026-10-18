@@ -82,45 +82,178 @@ class MainActivity : Activity() {
         content = root
         setContentView(scroll)
     }
-    private fun showHome() {
-        base("على شو عم تدور بدوما؟", "كل شي بدك ياه، بتلاقيه هون")
-        search = EditText(this).apply {
-            hint = "ابحث عن محل، منتج، طبيب أو خدمة..."
-            textSize = 15f; singleLine = true; gravity = Gravity.RIGHT
-            setPadding(dp(14), dp(12), dp(14), dp(12)); background = rounded(Color.WHITE, dp(14))
-            textDirection = View.TEXT_DIRECTION_RTL
-        }
-        content.addView(search, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(16) })
-        content.addView(text("الخدمات الرئيسية", 19f, burgundy, true), LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
-        val grid = GridLayout(this).apply { columnCount = 2; layoutDirection = View.LAYOUT_DIRECTION_RTL }
-        categories.forEach { (emoji, name) ->
-            val tile = TextView(this).apply {
-                text = "$emoji\n$name"; textSize = 16f; gravity = Gravity.CENTER
-                setTextColor(ink); setTypeface(typeface, Typeface.BOLD)
-                setPadding(dp(8), dp(18), dp(8), dp(18)); background = rounded(Color.WHITE, dp(16))
-                setOnClickListener { showSection(name) }
-            }
-            val lp = GridLayout.LayoutParams().apply {
-                width = 0; height = dp(106); columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                setMargins(dp(4), dp(4), dp(4), dp(4))
-            }
-            grid.addView(tile, lp)
-        }
-        content.addView(grid)
-        val note = text("نسخة تجريبية أولية • المعلومات والخدمات تحتاج إلى إدخال وتحقق قبل الإطلاق", 12f, Color.DKGRAY)
-        note.setPadding(0, dp(16), 0, 0); content.addView(note)
-        search.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val q = s?.toString()?.trim().orEmpty()
-                if (q.isNotEmpty()) {
-                    val match = categories.firstOrNull { it.second.contains(q, true) }
-                    if (match != null) { /* category remains accessible in grid */ }
-                }
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
+private fun showHome() {
+    base("على شو عم تدور بدوما؟", "كل شي بدك ياه، بتلاقيه هون")
+
+    search = EditText(this).apply {
+        hint = "ابحث عن محل، منتج، طبيب أو خدمة..."
+        textSize = 15f
+        singleLine = true
+        gravity = Gravity.RIGHT
+        setPadding(dp(14), dp(12), dp(14), dp(12))
+        background = rounded(Color.WHITE, dp(16))
+        textDirection = View.TEXT_DIRECTION_RTL
     }
+
+    content.addView(
+        search,
+        LinearLayout.LayoutParams(-1, dp(54)).apply {
+            bottomMargin = dp(22)
+        }
+    )
+
+    content.addView(
+        text("الخدمات الرئيسية", 20f, burgundy, true),
+        LinearLayout.LayoutParams(-1, -2).apply {
+            bottomMargin = dp(12)
+        }
+    )
+
+    val grid = GridLayout(this).apply {
+        columnCount = 2
+        layoutDirection = View.LAYOUT_DIRECTION_RTL
+        useDefaultMargins = false
+    }
+
+    categories.forEach { (emoji, name) ->
+        val tile = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(dp(8), dp(14), dp(8), dp(14))
+            background = rounded(Color.WHITE, dp(22))
+            elevation = dp(2).toFloat()
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { showSection(name) }
+        }
+
+        tile.addView(
+            text(emoji, 29f, burgundy, false).apply {
+                gravity = Gravity.CENTER
+            }
+        )
+
+        tile.addView(
+            text(name, 16f, ink, true).apply {
+                gravity = Gravity.CENTER
+                setPadding(0, dp(9), 0, 0)
+            }
+        )
+
+        val lp = GridLayout.LayoutParams().apply {
+            width = 0
+            height = dp(112)
+            columnSpec = GridLayout.spec(
+                GridLayout.UNDEFINED, 1f
+            )
+            setMargins(dp(5), dp(5), dp(5), dp(5))
+        }
+
+        grid.addView(tile, lp)
+    }
+
+    content.addView(
+        grid,
+        LinearLayout.LayoutParams(-1, -2).apply {
+            bottomMargin = dp(24)
+        }
+    )
+
+    // مساحة الإعلان العنابية
+    val adBanner = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        layoutDirection = View.LAYOUT_DIRECTION_RTL
+        setPadding(dp(16), dp(16), dp(16), dp(16))
+
+        background = android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation
+                .LEFT_RIGHT,
+            intArrayOf(
+                Color.rgb(83, 8, 25),
+                burgundy,
+                Color.rgb(105, 39, 57)
+            )
+        ).apply {
+            cornerRadius = dp(28).toFloat()
+        }
+
+        elevation = dp(3).toFloat()
+        isClickable = true
+        isFocusable = true
+        setOnClickListener {
+            showSection("الإعلانات والعروض")
+        }
+    }
+
+    val adText = TextView(this).apply {
+        text = "ضع إعلانك هنا"
+        textSize = 23f
+        setTextColor(Color.WHITE)
+        setTypeface(typeface, Typeface.BOLD)
+        gravity = Gravity.CENTER
+        textDirection = View.TEXT_DIRECTION_RTL
+    }
+
+    adBanner.addView(
+        adText,
+        LinearLayout.LayoutParams(0, dp(100), 1f)
+    )
+
+    val adImagePlaceholder = TextView(this).apply {
+        text = "🏙️\nدوما"
+        textSize = 20f
+        gravity = Gravity.CENTER
+        setTextColor(Color.WHITE)
+        background = rounded(
+            Color.rgb(113, 69, 79),
+            dp(18)
+        )
+    }
+
+    adBanner.addView(
+        adImagePlaceholder,
+        LinearLayout.LayoutParams(dp(105), dp(100))
+    )
+
+    content.addView(
+        adBanner,
+        LinearLayout.LayoutParams(-1, dp(132)).apply {
+            topMargin = dp(4)
+            bottomMargin = dp(12)
+        }
+    )
+
+    content.addView(
+        text(
+            "نسخة تجريبية أولية • المعلومات والخدمات تحتاج إلى التحقق",
+            12f,
+            Color.DKGRAY
+        ).apply {
+            setPadding(0, dp(8), 0, 0)
+        }
+    ) search.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(
+            s: CharSequence?, start: Int,
+            count: Int, after: Int
+        ) {}
+
+        override fun onTextChanged(
+            s: CharSequence?, start: Int,
+            before: Int, count: Int
+        ) {
+            val q = s?.toString()?.trim().orEmpty()
+            if (q.isNotEmpty()) {
+                val match = categories.firstOrNull {
+                    it.second.contains(q, true)
+                }
+                // تبقى جميع الخدمات متاحة في الشبكة.
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {}
+    })
+}
     private fun showSection(name: String) {
         base(name, "خدمة ضمن تطبيق على شو عم تدور بدوما؟")
         content.addView(button("رجوع إلى الرئيسية") { showHome() }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(16) })

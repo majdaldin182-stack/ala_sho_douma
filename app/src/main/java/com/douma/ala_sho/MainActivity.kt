@@ -89,7 +89,7 @@ private fun showHome() {
     search = EditText(this).apply {
         hint = "ابحث عن محل، منتج، طبيب أو خدمة..."
         textSize = 15f
-        singleLine = true
+setSingleLine(true)
         gravity = Gravity.RIGHT
         setPadding(dp(14), dp(12), dp(14), dp(12))
         background = rounded(Color.WHITE, dp(16))
@@ -233,7 +233,8 @@ private fun showHome() {
         ).apply {
             setPadding(0, dp(8), 0, 0)
         }
-    ) search.addTextChangedListener(object : TextWatcher {
+  );
+search.addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(
             s: CharSequence?, start: Int,
             count: Int, after: Int
@@ -413,7 +414,9 @@ private fun showHome() {
         }
         content.addView(details, margin())
         content.addView(button("إرفاق صورة") {
-            val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
+           val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+    setType("image/*")
+}
             startActivityForResult(intent, 301)
         }, margin())
         content.addView(button("تحديد الموقع على الخريطة") {
@@ -421,7 +424,10 @@ private fun showHome() {
         }, margin())
         content.addView(button("تجهيز رسالة الشكوى للمشاركة") {
             val body = "شكوى من تطبيق على شو عم تدور بدوما؟\\nالنوع: ${type.selectedItem}\\nالتفاصيل: ${details.text}\\nيرجى تحديد جهة الاستلام الرسمية قبل الإرسال."
-            val send = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, body) }
+            val send = Intent(Intent.ACTION_SEND).apply {
+    setType("text/plain")
+    putExtra(Intent.EXTRA_TEXT, body)
+}
             startActivity(Intent.createChooser(send, "مشاركة الشكوى"))
         }, margin())
         val disclaimer = text("ملاحظة: هذه النسخة لا ترسل الشكوى تلقائياً إلى المجلس ولا تحفظها في قاعدة بيانات. يلزم تحديد قناة رسمية وربطها قبل الإطلاق.", 13f, Color.DKGRAY)

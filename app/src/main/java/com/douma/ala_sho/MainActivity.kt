@@ -296,11 +296,12 @@ search.addTextChangedListener(object : TextWatcher {
         margin()
     )
 
-    val loading = text("جارٍ تحميل الصيدليات...", 16f)
-    loading.gravity = Gravity.CENTER
+    val loading = text("جارٍ تحميل الصيدليات...", 16f).apply {
+        gravity = Gravity.CENTER
+    }
     content.addView(loading, margin())
 
-    try { FirebaseFirestore.getInstance()
+    FirebaseFirestore.getInstance()
         .collection("pharmacies")
         .whereEqualTo("active", true)
         .get()
@@ -309,10 +310,7 @@ search.addTextChangedListener(object : TextWatcher {
 
             if (snapshot.isEmpty) {
                 content.addView(
-                    text(
-                        "لا توجد صيدليات مناوبة مضافة حالياً.",
-                        16f
-                    ),
+                    text("لا توجد صيدليات مناوبة مضافة حالياً.", 16f),
                     margin()
                 )
             } else {
@@ -336,10 +334,7 @@ search.addTextChangedListener(object : TextWatcher {
                     val card = LinearLayout(this).apply {
                         orientation = LinearLayout.VERTICAL
                         layoutDirection = View.LAYOUT_DIRECTION_RTL
-                        setPadding(
-                            dp(16), dp(14),
-                            dp(16), dp(14)
-                        )
+                        setPadding(dp(16), dp(14), dp(16), dp(14))
                         background = rounded(Color.WHITE, dp(16))
                     }
 
@@ -349,17 +344,13 @@ search.addTextChangedListener(object : TextWatcher {
 
                     card.addView(
                         text("📍 $address", 15f),
-                        LinearLayout.LayoutParams(-1, -2).apply {
-                            topMargin = dp(7)
-                        }
+                        margin()
                     )
 
                     if (dutyHours.isNotBlank()) {
                         card.addView(
                             text("🕒 المناوبة: $dutyHours", 15f),
-                            LinearLayout.LayoutParams(-1, -2).apply {
-                                topMargin = dp(6)
-                            }
+                            margin()
                         )
                     }
 
@@ -372,9 +363,7 @@ search.addTextChangedListener(object : TextWatcher {
                                 )
                                 startActivity(dialIntent)
                             },
-                            LinearLayout.LayoutParams(-1, -2).apply {
-                                topMargin = dp(10)
-                            }
+                            margin()
                         )
                     }
 
@@ -388,34 +377,22 @@ search.addTextChangedListener(object : TextWatcher {
                 }
             }
         }
-                .addOnFailureListener {
+        .addOnFailureListener { error ->
             content.removeView(loading)
+
             content.addView(
                 text(
-                    "تعذر تحميل الصيدليات. تحقق من اتصال الإنترنت وإعدادات Firebase.",
+                    "تعذر تحميل الصيدليات: ${error.localizedMessage ?: "تحقق من اتصال الإنترنت وإعدادات Firebase."}",
                     16f,
                     burgundy
                 ),
                 margin()
             )
         }
-    } catch (e: Exception) {
-        content.removeView(loading)
-        content.addView(
-            text(
-                "خطأ في تهيئة Firebase: ${e.localizedMessage ?: "خطأ غير معروف"}",
-                14f,
-                burgundy
-            ),
-            margin()
-        )
-    }
 }
 
-private fun complaintForm() {
-
-private fun complaintForm() {
-     private fun complaintForm() {   content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())
+     private fun complaintForm() 
+    {   content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())
         content.addView(text("نوع الشكوى", 15f, ink, true))
         val type = Spinner(this)
         val options = listOf("طرق وحفر", "نظافة ونفايات", "إنارة", "مياه وصرف صحي", "شكوى أخرى", "مقترح")

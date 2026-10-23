@@ -12,6 +12,7 @@ import android.net.Uri
 import android.widget.*
 import android.text.Editable
 import android.text.TextWatcher
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : Activity() {
     private val burgundy = Color.rgb(126, 23, 56)
@@ -272,7 +273,7 @@ private fun showHome() {
                 }, margin())
             }
             "المشافي" -> showInfo("المشافي", "سيُضاف دليل المشافي وأرقام التواصل والمواقع وساعات العمل بعد التحقق.")
-            "الصيدليات" -> showInfo("الصيدليات المناوبة", "ستُعرض الصيدليات المناوبة مع تاريخ آخر تحديث ورقم الاتصال بعد إدخال البيانات والتحقق منها.")
+            "الصيدليات" -> showPharmacies()
             "الأطباء" -> showInfo("دليل الأطباء والعيادات", "يمكن للطبيب طلب إضافة عيادته، مع مراجعة بياناته قبل النشر.")
             "المحلات والمنتجات" -> showInfo("المحلات والمنتجات", "ابحث عن المحلات حسب النشاط أو المنتج. قاعدة المحلات تحتاج إلى تعبئة.")
             "الإعلانات والعروض" -> showInfo("الإعلانات والعروض", "مساحة للإعلانات المحلية وعروض المحلات بعد تفعيل لوحة الإدارة.")
@@ -286,7 +287,119 @@ private fun showHome() {
         content.addView(text(desc, 17f), margin())
         content.addView(button("رجوع للرئيسية") { showHome() }, margin())
     }
-    private fun complaintForm() {
+    private fun complaintForm() { private fun showPharmacies() {
+    base("الصيدليات المناوبة", "معلومات المناوبات في دوما")
+
+    content.addView(
+        button("رجوع للرئيسية") { showHome() },
+        margin()
+    )
+
+    val loading = text("جارٍ تحميل الصيدليات...", 16f)
+    loading.gravity = Gravity.CENTER
+    content.addView(loading, margin())
+
+    FirebaseFirestore.getInstance()
+        .collection("pharmacies")
+        .whereEqualTo("active", true)
+        .get()
+        .addOnSuccessListener { snapshot ->
+            content.removeView(loading)
+
+            if (snapshot.isEmpty) {
+                content.addView(
+                    text(
+                        "لا توجد صيدليات مناوبة مضافة حالياً.",
+                        16f
+                    ),
+                    margin()
+                )
+            } else {
+                snapshot.documents.forEach { doc ->
+                    val name = doc.getString("name")
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "صيدلية بدون اسم"
+
+                    val address = doc.getString("address")
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "العنوان غير متوفر"
+
+                    val phone = doc.getString("phone")
+                        ?.trim()
+                        .orEmpty()
+
+                    val dutyHours = doc.getString("dutyHours")
+                        ?.takeIf { it.isNotBlank() }
+                        .orEmpty()
+
+                    val card = LinearLayout(this).apply {
+                        orientation = LinearLayout.VERTICAL
+                        layoutDirection = View.LAYOUT_DIRECTION_RTL
+                        setPadding(
+                            dp(16), dp(14),
+                            dp(16), dp(14)
+                        )
+                        background = rounded(Color.WHITE, dp(16))
+                    }
+
+                    card.addView(
+                        text(name, 19f, burgundy, true)
+                    )
+
+                    card.addView(
+                        text("📍 $address", 15f),
+                        LinearLayout.LayoutParams(-1, -2).apply {
+                            topMargin = dp(7)
+                        }
+                    )
+
+                    if (dutyHours.isNotBlank()) {
+                        card.addView(
+                            text("🕒 المناوبة: $dutyHours", 15f),
+                            LinearLayout.LayoutParams(-1, -2).apply {
+                                topMargin = dp(6)
+                            }
+                        )
+                    }
+
+                    if (phone.isNotBlank()) {
+                        card.addView(
+                            button("اتصال بالصيدلية") {
+                                val dialIntent = Intent(
+                                    Intent.ACTION_DIAL,
+                                    Uri.fromParts("tel", phone, null)
+                                )
+                                startActivity(dialIntent)
+                            },
+                            LinearLayout.LayoutParams(-1, -2).apply {
+                                topMargin = dp(10)
+                            }
+                        )
+                    }
+
+                    content.addView(
+                        card,
+                        LinearLayout.LayoutParams(-1, -2).apply {
+                            topMargin = dp(7)
+                            bottomMargin = dp(7)
+                        }
+                    )
+                }
+            }
+        }
+        .addOnFailureListener {
+            content.removeView(loading)
+
+            content.addView(
+                text(
+                    "تعذر تحميل الصيدليات. تحقق من اتصال الإنترنت وإعدادات Firebase.",
+                    16f,
+                    burgundy
+                ),
+                margin()
+            )
+        }
+}
         content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())
         content.addView(text("نوع الشكوى", 15f, ink, true))
         val type = Spinner(this)

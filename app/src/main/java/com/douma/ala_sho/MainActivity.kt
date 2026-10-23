@@ -301,11 +301,13 @@ private fun showPharmacies() {
     val loading = text("جارٍ تحميل المناوبات...", 16f)
     content.addView(loading, margin())
 
-    val today = java.text.SimpleDateFormat(
-        "dd/MM/yy",
-        java.util.Locale.getDefault()
-    ).format(java.util.Date())
-
+    val dateFormat = java.text.SimpleDateFormat(
+    "dd/MM/yy",
+    java.util.Locale.US
+)
+dateFormat.timeZone = java.util.TimeZone.getDefault()
+val today = dateFormat.format(java.util.Date())
+android.util.Log.d("PharmacyDebug", "Today's date: $today")
     FirebaseFirestore.getInstance()
         .collection("pharmacies")
         .whereEqualTo("active", true)

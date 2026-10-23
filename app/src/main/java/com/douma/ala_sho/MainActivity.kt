@@ -288,7 +288,8 @@ search.addTextChangedListener(object : TextWatcher {
         content.addView(text(desc, 17f), margin())
         content.addView(button("رجوع للرئيسية") { showHome() }, margin())
     }
-    private fun showPharmacies() {
+   
+private fun showPharmacies() {
     base("الصيدليات المناوبة", "معلومات المناوبات في دوما")
 
     content.addView(
@@ -327,7 +328,15 @@ search.addTextChangedListener(object : TextWatcher {
                         ?.trim()
                         .orEmpty()
 
-                    val dutyHours = doc.getString("dutyHours")
+                    val startTime = doc.getString("startTime")
+                        ?.takeIf { it.isNotBlank() }
+                        .orEmpty()
+
+                    val endTime = doc.getString("endTime")
+                        ?.takeIf { it.isNotBlank() }
+                        .orEmpty()
+
+                    val days = doc.getString("days")
                         ?.takeIf { it.isNotBlank() }
                         .orEmpty()
 
@@ -347,9 +356,23 @@ search.addTextChangedListener(object : TextWatcher {
                         margin()
                     )
 
-                    if (dutyHours.isNotBlank()) {
+                    if (startTime.isNotBlank() || endTime.isNotBlank()) {
+                        val hours = when {
+                            startTime.isNotBlank() && endTime.isNotBlank() ->
+                                "$startTime - $endTime"
+                            startTime.isNotBlank() -> "من $startTime"
+                            else -> "حتى $endTime"
+                        }
+
                         card.addView(
-                            text("🕒 المناوبة: $dutyHours", 15f),
+                            text("🕒 وقت المناوبة: $hours", 15f),
+                            margin()
+                        )
+                    }
+
+                    if (days.isNotBlank()) {
+                        card.addView(
+                            text("📅 أيام المناوبة: $days", 15f),
                             margin()
                         )
                     }
@@ -390,6 +413,7 @@ search.addTextChangedListener(object : TextWatcher {
             )
         }
 }
+
 
      private fun complaintForm() 
     {   content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())

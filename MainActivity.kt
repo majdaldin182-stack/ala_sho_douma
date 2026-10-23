@@ -287,7 +287,7 @@ private fun showHome() {
         content.addView(text(desc, 17f), margin())
         content.addView(button("رجوع للرئيسية") { showHome() }, margin())
     }
-    private fun complaintForm() { private fun showPharmacies() {
+    private fun showPharmacies() {
     base("الصيدليات المناوبة", "معلومات المناوبات في دوما")
 
     content.addView(
@@ -400,7 +400,7 @@ private fun showHome() {
             )
         }
 }
-        content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())
+     private fun complaintForm() {   content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())
         content.addView(text("نوع الشكوى", 15f, ink, true))
         val type = Spinner(this)
         val options = listOf("طرق وحفر", "نظافة ونفايات", "إنارة", "مياه وصرف صحي", "شكوى أخرى", "مقترح")

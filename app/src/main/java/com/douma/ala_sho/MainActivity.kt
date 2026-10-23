@@ -289,29 +289,34 @@ search.addTextChangedListener(object : TextWatcher {
         content.addView(button("رجوع للرئيسية") { showHome() }, margin())
     }
    
+
 private fun showPharmacies() {
-    base("الصيدليات المناوبة", "معلومات المناوبات في دوما")
+    base("الصيدليات المناوبة", "مناوبات الصيدليات في دوما")
 
     content.addView(
         button("رجوع للرئيسية") { showHome() },
         margin()
     )
 
-    val loading = text("جارٍ تحميل الصيدليات...", 16f).apply {
-        gravity = Gravity.CENTER
-    }
+    val loading = text("جارٍ تحميل المناوبات...", 16f)
     content.addView(loading, margin())
+
+    val today = java.text.SimpleDateFormat(
+        "dd/MM/yy",
+        java.util.Locale.getDefault()
+    ).format(java.util.Date())
 
     FirebaseFirestore.getInstance()
         .collection("pharmacies")
         .whereEqualTo("active", true)
+        .whereEqualTo("date", today)
         .get()
         .addOnSuccessListener { snapshot ->
             content.removeView(loading)
 
             if (snapshot.isEmpty) {
                 content.addView(
-                    text("لا توجد صيدليات مناوبة مضافة حالياً.", 16f),
+                    text("لا توجد مناوبات مسجلة لهذا اليوم.", 16f),
                     margin()
                 )
             } else {
@@ -330,15 +335,13 @@ private fun showPharmacies() {
 
                     val startTime = doc.getString("startTime")
                         ?.takeIf { it.isNotBlank() }
-                        .orEmpty()
+                        ?: "21:00"
 
                     val endTime = doc.getString("endTime")
                         ?.takeIf { it.isNotBlank() }
-                        .orEmpty()
+                        ?: "00:00"
 
-                    val days = doc.getString("days")
-                        ?.takeIf { it.isNotBlank() }
-                        .orEmpty()
+                    val days = doc.getString("days").orEmpty()
 
                     val card = LinearLayout(this).apply {
                         orientation = LinearLayout.VERTICAL
@@ -347,35 +350,54 @@ private fun showPharmacies() {
                         background = rounded(Color.WHITE, dp(16))
                     }
 
+                    card.addView(text(name, 19f, burgundy, true))
+                    card.addView(text("📍 $address", 15f), margin())
                     card.addView(
-                        text(name, 19f, burgundy, true)
+                        text("📅 التاريخ: $today${if (days.isNotBlank()) " - $days" else ""}", 15f),
+                        margin()
                     )
-
                     card.addView(
-                        text("📍 $address", 15f),
+                        text("🕒 المناوبة: $startTime - $endTime", 15f),
                         margin()
                     )
 
-                    if (startTime.isNotBlank() || endTime.isNotBlank()) {
-                        val hours = when {
-                            startTime.isNotBlank() && endTime.isNotBlank() ->
-                                "$startTime - $endTime"
-                            startTime.isNotBlank() -> "من $startTime"
-                            else -> "حتى $endTime"
+                    if (phone.isNotBlank() && phone != "غير متوفر") {
+                        card.addView(
+                            button("اتصال بالصيدلية") {
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_DIAL,
+                                        Uri.fromParts("tel", phone, null)
+                                    )
+                                )
+                            },
+                            margin()
+                        )
+                    }
+
+                    content.addView(
+                        card,
+                        LinearLayout.LayoutParams(-1, -2).apply {
+                            topMargin = dp(7)
+                            bottomMargin = dp(7)
                         }
+                    )
+                }
+            }
+        }
+        .addOnFailureListener { error ->
+            content.removeView(loading)
+            content.addView(
+                text(
+                    "تعذر تحميل المناوبات: ${error.localizedMessage ?: "تحقق من الاتصال"}",
+                    16f,
+                    burgundy
+                ),
+                margin()
+            )
+        }
+}
 
-                        card.addView(
-                            text("🕒 وقت المناوبة: $hours", 15f),
-                            margin()
-                        )
-                    }
-
-                    if (days.isNotBlank()) {
-                        card.addView(
-                            text("📅 أيام المناوبة: $days", 15f),
-                            margin()
-                        )
-                    }
 
                     if (phone.isNotBlank()) {
                         card.addView(

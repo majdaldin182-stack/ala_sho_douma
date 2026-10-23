@@ -397,46 +397,6 @@ private fun showPharmacies() {
             )
         }
 }
-
-
-                    if (phone.isNotBlank()) {
-                        card.addView(
-                            button("اتصال بالصيدلية") {
-                                val dialIntent = Intent(
-                                    Intent.ACTION_DIAL,
-                                    Uri.fromParts("tel", phone, null)
-                                )
-                                startActivity(dialIntent)
-                            },
-                            margin()
-                        )
-                    }
-
-                    content.addView(
-                        card,
-                        LinearLayout.LayoutParams(-1, -2).apply {
-                            topMargin = dp(7)
-                            bottomMargin = dp(7)
-                        }
-                    )
-                }
-            }
-        }
-        .addOnFailureListener { error ->
-            content.removeView(loading)
-
-            content.addView(
-                text(
-                    "تعذر تحميل الصيدليات: ${error.localizedMessage ?: "تحقق من اتصال الإنترنت وإعدادات Firebase."}",
-                    16f,
-                    burgundy
-                ),
-                margin()
-            )
-        }
-}
-
-
      private fun complaintForm() 
     {   content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())
         content.addView(text("نوع الشكوى", 15f, ink, true))

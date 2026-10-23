@@ -300,7 +300,7 @@ search.addTextChangedListener(object : TextWatcher {
     loading.gravity = Gravity.CENTER
     content.addView(loading, margin())
 
-    FirebaseFirestore.getInstance()
+    try { FirebaseFirestore.getInstance()
         .collection("pharmacies")
         .whereEqualTo("active", true)
         .get()
@@ -388,9 +388,8 @@ search.addTextChangedListener(object : TextWatcher {
                 }
             }
         }
-        .addOnFailureListener {
+                .addOnFailureListener {
             content.removeView(loading)
-
             content.addView(
                 text(
                     "تعذر تحميل الصيدليات. تحقق من اتصال الإنترنت وإعدادات Firebase.",
@@ -400,7 +399,22 @@ search.addTextChangedListener(object : TextWatcher {
                 margin()
             )
         }
+    } catch (e: Exception) {
+        content.removeView(loading)
+        content.addView(
+            text(
+                "خطأ في تهيئة Firebase: ${e.localizedMessage ?: "خطأ غير معروف"}",
+                14f,
+                burgundy
+            ),
+            margin()
+        )
+    }
 }
+
+private fun complaintForm() {
+
+private fun complaintForm() {
      private fun complaintForm() {   content.addView(text("إرسال شكوى للمجلس", 20f, burgundy, true), margin())
         content.addView(text("نوع الشكوى", 15f, ink, true))
         val type = Spinner(this)

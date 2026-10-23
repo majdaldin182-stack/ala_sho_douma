@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "987803835395",
+    "project_id": "ala-sho-douma",
+    "storage_bucket": "ala-sho-douma.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987803835395:android:7138f39331c05adc0d0236",
+        "android_client_info": {
+          "package_name": "com.douma.ala_sho"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh7z_jcVl08WhLUHNo-Y-K-3OD7iXKjvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
